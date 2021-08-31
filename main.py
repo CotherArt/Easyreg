@@ -1,5 +1,4 @@
 from tkinter import *
-from typing import Sized
  
 # root = None
 # dnentryBox = None
@@ -11,7 +10,7 @@ from typing import Sized
 # copybutton = None
 
 def copyCallBack():
-    tx = dnentryBox.get() + '//' + imeientryBox.get() + '//' + modelentrybox.get() + '//' + problementryBox.get() + procedentryBox.get() + resultentryBox.get() + '//12345//1234' 
+    tx = 'dn:' + dnentryBox.get() + '//imei:' + imeientryBox.get() + '//modelo:' + modelentrybox.get() + '//' + problementryBox.get() + procedentryBox.get() + resultentryBox.get() + '//' + empleadoentryBox.get() + '//' + extensionentryBox.get() 
     resultText.set('')
     resultText.set(tx)
 
@@ -20,7 +19,8 @@ def copyCallBack():
 
 
 root = Tk() #Create the base window
-root.geometry("400x300")    # Sets the size of the base window
+root.geometry("400x200")    # Sets the size of the base window
+root.title("EasyReg by CotherArt")
 
 frame = Frame(root) # Puts the frame into the windod
 frame.pack()    # Displays the frame
@@ -37,7 +37,10 @@ procedframe = Frame(root)
 procedframe.pack()
 copyframe = Frame(root)
 copyframe.pack()
-
+empleadoframe = Frame(root)
+empleadoframe.pack()
+extesionframe = Frame(root)
+extesionframe.pack()
 
 # DN row ---
 dnlabel = Label(dnframe, text='DN:')
@@ -68,8 +71,17 @@ procedentryBox.pack(side=RIGHT)
 resultText = StringVar()
 copybutton = Button(copyframe, text='Copiar', command=copyCallBack)
 copybutton.pack(side=TOP)
-resultentryBox = Entry(copyframe, width=50, textvariable=resultText)
-resultentryBox.pack(side=BOTTOM)
+resultentryBox = Entry(copyframe, width=60, textvariable=resultText)
+resultentryBox.pack(side=TOP)
 
-root.title("EasyReg by CotherArt")
+empleadolabel = Label(empleadoframe, text='# Empleado:')
+empleadolabel.pack(side=LEFT)
+empleadoentryBox = Entry(empleadoframe)
+empleadoentryBox.pack(side=RIGHT)
+
+extensionlabel = Label(extesionframe, text='# Extension:')
+extensionlabel.pack(side=LEFT)
+extensionentryBox = Entry(extesionframe)
+extensionentryBox.pack(side=RIGHT)
+
 root.mainloop()
