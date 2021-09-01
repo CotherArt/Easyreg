@@ -1,5 +1,5 @@
 from tkinter import *
- 
+
 # root = None
 # dnentryBox = None
 # imeientryBox = None
@@ -9,48 +9,53 @@ from tkinter import *
 # resultentryBox = None
 # copybutton = None
 
-def copyCallBack():
+def deletereg():
+    resultentryBox.delete(0, 'end')
+
+def copyCallBack(): # Boton de copiar
+    deletereg() 
+    tx = ''
     tx = 'dn:' + dnentryBox.get() + '//imei:' + imeientryBox.get() + '//modelo:' + modelentrybox.get() + '//' + problementryBox.get() + procedentryBox.get() + resultentryBox.get() + '//' + empleadoentryBox.get() + '//' + extensionentryBox.get() 
-    resultText.set('')
     resultText.set(tx)
+    print(tx)
 
     root.clipboard_clear()
     root.clipboard_append(tx) 
 
 
 root = Tk() #Create the base window
-root.geometry("400x200")    # Sets the size of the base window
+root.geometry("400x270")    # Sets the size of the base window
 root.title("EasyReg by CotherArt")
 
 frame = Frame(root) # Puts the frame into the windod
 frame.pack()    # Displays the frame
     
-dnframe = Frame(root)
+dnframe = Frame(root, bd=4)
 dnframe.pack()
-imeiframe = Frame(root)
+imeiframe = Frame(root, bd=4)
 imeiframe.pack()
-modelframe  = Frame(root)
+modelframe  = Frame(root, bd=4)
 modelframe.pack()
-problemframe = Frame(root)
+problemframe = Frame(root, bd=4)
 problemframe.pack()
-procedframe = Frame(root)
+procedframe = Frame(root, bd=4)
 procedframe.pack()
-copyframe = Frame(root)
+copyframe = Frame(root, bd=4)
 copyframe.pack()
-empleadoframe = Frame(root)
+empleadoframe = Frame(root, bd=4)
 empleadoframe.pack()
-extesionframe = Frame(root)
+extesionframe = Frame(root, bd=4)
 extesionframe.pack()
 
 # DN row ---
 dnlabel = Label(dnframe, text='DN:')
 dnlabel.pack(side=LEFT)
-dnentryBox = Entry(dnframe)
+dnentryBox = Entry(dnframe, width=20)
 dnentryBox.pack(side=RIGHT)
 # IMEI row ---
 imeilabel = Label(imeiframe, text='IMEI:')
 imeilabel.pack(side=LEFT)
-imeientryBox = Entry(imeiframe)
+imeientryBox = Entry(imeiframe, width=20)
 imeientryBox.pack(side=RIGHT)
 # MODEL row ---
 modellabel = Label(modelframe, text='MODELO:')
