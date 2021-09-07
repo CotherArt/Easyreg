@@ -9,12 +9,17 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QInputDialog
 from time import sleep
+import pyperclip
+import pickle
 
 class Ui_MainWindow(object):
     registro = ''
-
+    empleado_dic = {"empleado" : '00000', "extension" : '0000'}
+    MainWindow = None
     def setupUi(self, MainWindow):
+        self.MainWindow = MainWindow
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(374, 300)
         icon = QtGui.QIcon()
@@ -393,6 +398,8 @@ class Ui_MainWindow(object):
         self.actionSiempre_visible.setText(_translate("MainWindow", "Siempre visible"))
 
     def setupFunctions(self):
+        self.load_empleado()
+
         self.btn_general.setCheckable(True)
         self.btn_llamadas.setCheckable(True)
         self.btn_datos.setCheckable(True)
@@ -409,6 +416,18 @@ class Ui_MainWindow(object):
         self.btn_datos.clicked.connect(self.onClick_btn_datos)
         self.btn_sms.clicked.connect(self.onClick_btn_sms)
         self.btn_tramites.clicked.connect(self.onClick_btn_tramites)
+
+        self.action_Empleado.triggered.connect(self.onClick_empleado)
+        self.action_Extension.triggered.connect(self.onClick_extension)
+            # copy buttons--------------------------
+        self.btn_copy_dn.clicked.connect(lambda: pyperclip.copy(self.txt_dn.text()))
+        self.btn_copy_imei.clicked.connect(lambda: pyperclip.copy(self.txt_imei.text()))
+        self.btn_copy_modelo.clicked.connect(lambda: pyperclip.copy(self.txt_modelo.text()))
+        self.btn_copy_reg.clicked.connect(lambda: pyperclip.copy(self.txt_registro.toPlainText()))
+        
+        self.btn_copy_iccid.clicked.connect(lambda: pyperclip.copy(self.txt_iccid.text()))
+        self.btn_copy_nip.clicked.connect(lambda: pyperclip.copy(self.txt_nip.text()))
+        self.btn_copy_dn2p.clicked.connect(lambda: pyperclip.copy(self.txt_dn2p.text()))
         # Config------------------------------------
         self.btn_confgen.clicked.connect(self.update_registro)
         self.btn_vozapp.clicked.connect(self.update_registro)
@@ -419,16 +438,6 @@ class Ui_MainWindow(object):
         self.txt_imei.textChanged.connect(self.update_registro)
         self.txt_modelo.textChanged.connect(self.update_registro)
 
-
-
-    # def onChange_dn(self):
-    #     dn = 'dn:' + self.txt_dn.text() + '//'
-    #     self.txt_registro.setText(dn)
-    
-    # def onChange_imei(self):
-
-    # def onChange_modelo(self):
-    #     return
 
     def update_registro(self):
         self.registro = ''
@@ -441,7 +450,6 @@ class Ui_MainWindow(object):
 
         if self.btn_general.isChecked():
             self.registro += '//Cte no tiene servicio en su linea de megamobil'
-            print('uwu')
         if self.btn_llamadas.isChecked():
             self.registro += '//Cte no tiene servicio de llamadas'
         if self.btn_datos.isChecked():
@@ -455,7 +463,9 @@ class Ui_MainWindow(object):
             self.registro += '//Se configura vozapp'
         if self.btn_2level.isChecked():
             self.registro += '//Se genera reporte de 2do nivel'
+        self.registro += '//' + self.empleado_dic.get('empleado') + '//' + self.empleado_dic.get('extension')
 
+        # print(self.registro)
         self.txt_registro.setText(self.registro)
         
 # Button actions -----------------------------------
@@ -481,6 +491,36 @@ class Ui_MainWindow(object):
     def onClick_btn_confgen(self):
         self.update_registro()
 
+    def onClick_empleado(self):
+        empleado, ok = QInputDialog.getText(self.MainWindow, '#Empleado', 'Ingresa tu numero de empleado:')
+        if ok:
+            self.empleado_dic['empleado'] = empleado
+            self.save_empleado()
+	
+    def onClick_extension(self):
+        extension, ok = QInputDialog.getText(self.MainWindow, '#Extension', 'Ingresa tu numero de extension:')
+        if ok:
+            self.empleado_dic['extension'] = extension
+            self.save_empleado()
+
+    def save_empleado(self):
+        with open('empleado.uwu', 'wb') as handle:
+            pickle.dump(self.empleado_dic, handle)
+            self.set_menu_empezar()
+
+
+    def load_empleado(self):
+        from os.path import exists
+        file_exists = exists('empleado.uwu')
+        if not file_exists:
+            self.save_empleado()
+        with open('empleado.uwu', 'rb') as handle:
+            self.empleado_dic = pickle.loads(handle.read())
+            self.set_menu_empezar()
+
+    def set_menu_empezar(self): # Actualiza el nombre en el menu con los actuales valores de #Empleado y  #Extension
+        self.action_Extension.setText('#Extension (' + self.empleado_dic.get('extension') + ')')
+        self.action_Empleado.setText('#Empleado (' + self.empleado_dic.get('empleado') + ')')
 
     def reset(self):
         self.txt_dn.clear()
@@ -503,7 +543,7 @@ class Ui_MainWindow(object):
         self.btn_confgen.setChecked(False)
         self.btn_2level.setChecked(False)
 
-        MainWindow.resize(374, 300)
+        self.MainWindow.resize(374, 300)
 
 
 
