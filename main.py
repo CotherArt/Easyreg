@@ -408,17 +408,26 @@ class Ui_MainWindow(object):
         self.btn_confgen.setCheckable(True)
         self.btn_vozapp.setCheckable(True)
         self.btn_2level.setCheckable(True)
+        self.btn_cancel.setCheckable(True)
+        self.btn_porta.setCheckable(True)
+        self.btn_barring.setCheckable(True)
+        self.btn_suspend.setCheckable(True)
 
         # Buttons-----------------------------------
+        self.action_Empleado.triggered.connect(self.onClick_empleado)
+        self.action_Extension.triggered.connect(self.onClick_extension)
+
         self.btn_borrar.clicked.connect(self.reset)
         self.btn_general.clicked.connect(self.onClick_btn_general)
         self.btn_llamadas.clicked.connect(self.onClick_btn_llamadas)
         self.btn_datos.clicked.connect(self.onClick_btn_datos)
         self.btn_sms.clicked.connect(self.onClick_btn_sms)
         self.btn_tramites.clicked.connect(self.onClick_btn_tramites)
+        self.btn_equiv.clicked.connect(self.onClick_btn_equiv)
+        self.btn_cancel.clicked.connect(self.onClick_btn_cancel)
 
-        self.action_Empleado.triggered.connect(self.onClick_empleado)
-        self.action_Extension.triggered.connect(self.onClick_extension)
+        self.btn_porta.clicked.connect(self.onClick_btn_porta)
+
             # copy buttons--------------------------
         self.btn_copy_dn.clicked.connect(lambda: pyperclip.copy(self.txt_dn.text()))
         self.btn_copy_imei.clicked.connect(lambda: pyperclip.copy(self.txt_imei.text()))
@@ -437,6 +446,8 @@ class Ui_MainWindow(object):
         self.txt_dn.textChanged.connect(self.update_registro)
         self.txt_imei.textChanged.connect(self.update_registro)
         self.txt_modelo.textChanged.connect(self.update_registro)
+        self.txt_nip.textChanged.connect(self.update_registro)
+        self.txt_dn2p.textChanged.connect(self.update_registro)
 
 
     def update_registro(self):
@@ -457,10 +468,15 @@ class Ui_MainWindow(object):
         if self.btn_sms.isChecked():
             self.registro += '//Cte no tiene servicio de SMS'
 
+        if self.btn_porta.isChecked():
+            self.registro += '//Se hace una portabilidad al numero ' + self.txt_dn2p.text() + ' nip:' + self.txt_nip.text()
+
         if self.btn_confgen.isChecked():
             self.registro += '//Se activan los datos, el roaming, se configura APN, modo de red, se fuerza el operador de red'
         if self.btn_vozapp.isChecked():
             self.registro += '//Se configura vozapp'
+        if self.btn_cancel.isChecked():
+            self.registro += '//Cte quiere cancelar su servicio de megamobil//Se le lemcionan los beneficios del plan//Se le indica pasar a un CIS con su INE'
         if self.btn_2level.isChecked():
             self.registro += '//Se genera reporte de 2do nivel'
         self.registro += '//' + self.empleado_dic.get('empleado') + '//' + self.empleado_dic.get('extension')
@@ -490,6 +506,25 @@ class Ui_MainWindow(object):
 
     def onClick_btn_confgen(self):
         self.update_registro()
+    
+    def onClick_btn_equiv(self):
+        self.reset()
+        self.registro = 'Cte tiene problemas con cable o internet//se le indica que tiene que elegir la opcion correcta el la marcacion'
+        self.registro += '//' + self.empleado_dic.get('empleado') + '//' + self.empleado_dic.get('extension')
+        self.txt_registro.setText(self.registro)
+    
+    def onClick_btn_cancel(self):
+        self.update_registro()
+
+
+    def onClick_btn_porta(self):
+        self.update_registro()
+
+    def onClick_btn_barring(self):
+        return
+    
+    def onClick_btn_suspend(self):
+        return
 
     def onClick_empleado(self):
         empleado, ok = QInputDialog.getText(self.MainWindow, '#Empleado', 'Ingresa tu numero de empleado:')
@@ -508,7 +543,6 @@ class Ui_MainWindow(object):
             pickle.dump(self.empleado_dic, handle)
             self.set_menu_empezar()
 
-
     def load_empleado(self):
         from os.path import exists
         file_exists = exists('empleado.uwu')
@@ -523,6 +557,7 @@ class Ui_MainWindow(object):
         self.action_Empleado.setText('#Empleado (' + self.empleado_dic.get('empleado') + ')')
 
     def reset(self):
+        self.registro = ''
         self.txt_dn.clear()
         self.txt_imei.clear()
         self.txt_modelo.clear()
@@ -538,13 +573,18 @@ class Ui_MainWindow(object):
         self.btn_datos.setChecked(False)
         self.btn_sms.setChecked(False)
         self.btn_tramites.setChecked(False)
+        self.btn_cancel.setChecked(False)
 
         self.btn_vozapp.setChecked(False)
         self.btn_confgen.setChecked(False)
         self.btn_2level.setChecked(False)
 
-        self.MainWindow.resize(374, 300)
+        self.btn_porta.setChecked(False)
+        self.btn_barring.setChecked(False)
+        self.btn_suspend.setChecked(False)
 
+        self.MainWindow.resize(374, 300)
+    
 
 
 if __name__ == "__main__":
