@@ -11,13 +11,22 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QInputDialog
 from time import sleep
+from datetime import date
 import pyperclip
 import pickle
+from os.path import exists
+import os
 
 class Ui_MainWindow(object):
     registro = ''
+    today = date.today()
+    registros_dir = 'registros'
+    registro_file = registros_dir + '\\' + today.strftime("%b-%d-%Y") + '.txt'
+    print(registro_file)
     empleado_dic = {"empleado" : '00000', "extension" : '0000'}
     MainWindow = None
+    contador_llamadas = 0
+
     def setupUi(self, MainWindow):
         self.MainWindow = MainWindow
         MainWindow.setObjectName("MainWindow")
@@ -398,6 +407,12 @@ class Ui_MainWindow(object):
         self.actionSiempre_visible.setText(_translate("MainWindow", "Siempre visible"))
 
     def setupFunctions(self):
+        # Invalidos--------
+        self.btn_barring.setEnabled(False)
+        self.btn_suspend.setEnabled(False)
+        self.actionSiempre_visible.setEnabled(False)
+
+
         self.load_empleado()
 
         self.btn_general.setCheckable(True)
@@ -432,7 +447,7 @@ class Ui_MainWindow(object):
         self.btn_copy_dn.clicked.connect(lambda: pyperclip.copy(self.txt_dn.text()))
         self.btn_copy_imei.clicked.connect(lambda: pyperclip.copy(self.txt_imei.text()))
         self.btn_copy_modelo.clicked.connect(lambda: pyperclip.copy(self.txt_modelo.text()))
-        self.btn_copy_reg.clicked.connect(lambda: pyperclip.copy(self.txt_registro.toPlainText()))
+        self.btn_copy_reg.clicked.connect(lambda: self.onClick_copy_reg())
         
         self.btn_copy_iccid.clicked.connect(lambda: pyperclip.copy(self.txt_iccid.text()))
         self.btn_copy_nip.clicked.connect(lambda: pyperclip.copy(self.txt_nip.text()))
@@ -457,7 +472,7 @@ class Ui_MainWindow(object):
         if self.txt_imei.text() != '':
             self.registro += '//imei:' + self.txt_imei.text()
         if self.txt_modelo.text() != '':
-            self.registro += '//dn:' + self.txt_modelo.text()
+            self.registro += '//modelo:' + self.txt_modelo.text()
 
         if self.btn_general.isChecked():
             self.registro += '//Cte no tiene servicio en su linea de megamobil'
@@ -485,6 +500,10 @@ class Ui_MainWindow(object):
         self.txt_registro.setText(self.registro)
         
 # Button actions -----------------------------------
+    def onClick_copy_reg(self):
+        pyperclip.copy(self.txt_registro.toPlainText())
+        self.save_registro()
+
     def onClick_btn_general(self):
         self.groupBox_proced.setVisible(True)
         self.update_registro()
@@ -544,7 +563,6 @@ class Ui_MainWindow(object):
             self.set_menu_empezar()
 
     def load_empleado(self):
-        from os.path import exists
         file_exists = exists('empleado.uwu')
         if not file_exists:
             self.save_empleado()
@@ -552,6 +570,24 @@ class Ui_MainWindow(object):
             self.empleado_dic = pickle.loads(handle.read())
             self.set_menu_empezar()
 
+    def save_registro(self): #Guarda los registros en archivos
+        if not exists(self.registros_dir): # Si el directorio no esta, lo crea
+            os.makedirs(self.registros_dir)
+            print('directorio ' + self.registros_dir + ' creado con exito!')
+        # if not exists(self.registro_file): # Si el archivo no esta, lo crea
+        #     print('el archivo no existe')
+        #     with open(self.registro_file, 'x') as f:
+        #         f.close()
+        #         print('archivo ' + self.registro_file + ' creado con exito!')
+        # Abre el archivo y guarda el registro
+        with open(self.registro_file, 'a') as f:
+            self.contador_llamadas += 1
+            registro = str(self.contador_llamadas) + ': ' + self.txt_registro.toPlainText()
+            f.write(registro + '\n')
+        # Abre el archivo de registros y lo lee
+        with open(self.registro_file, 'r') as f:
+            print(f.read())
+        
     def set_menu_empezar(self): # Actualiza el nombre en el menu con los actuales valores de #Empleado y  #Extension
         self.action_Extension.setText('#Extension (' + self.empleado_dic.get('extension') + ')')
         self.action_Empleado.setText('#Empleado (' + self.empleado_dic.get('empleado') + ')')

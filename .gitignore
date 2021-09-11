@@ -1,4 +1,11 @@
 .vscode/
 venv/
+dist/
+build/
+__pycache__/
+registros/
 uidesign.ui
 empleado.uwu
+main.spec
+Easyreg.spec
+build.bat
