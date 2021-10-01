@@ -11,7 +11,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QInputDialog
 from time import sleep
-from datetime import date
+from datetime import date, datetime
 import pyperclip
 import pickle
 from os.path import exists
@@ -25,7 +25,6 @@ class Ui_MainWindow(object):
     print(registro_file)
     empleado_dic = {"empleado" : '00000', "extension" : '0000'}
     MainWindow = None
-    contador_llamadas = 0
 
     def setupUi(self, MainWindow):
         self.MainWindow = MainWindow
@@ -410,8 +409,6 @@ class Ui_MainWindow(object):
         # Invalidos--------
         self.btn_barring.setEnabled(False)
         self.btn_suspend.setEnabled(False)
-        self.actionSiempre_visible.setEnabled(False)
-
 
         self.load_empleado()
 
@@ -427,10 +424,12 @@ class Ui_MainWindow(object):
         self.btn_porta.setCheckable(True)
         self.btn_barring.setCheckable(True)
         self.btn_suspend.setCheckable(True)
+        self.actionSiempre_visible.setCheckable(True)
 
         # Buttons-----------------------------------
         self.action_Empleado.triggered.connect(self.onClick_empleado)
         self.action_Extension.triggered.connect(self.onClick_extension)
+        self.actionSiempre_visible.triggered.connect(self.onClick_AlwaysOnTop)
 
         self.btn_borrar.clicked.connect(self.reset)
         self.btn_general.clicked.connect(self.onClick_btn_general)
@@ -500,6 +499,12 @@ class Ui_MainWindow(object):
         self.txt_registro.setText(self.registro)
         
 # Button actions -----------------------------------
+    def onClick_AlwaysOnTop(self):
+        if self.actionSiempre_visible.isChecked():
+            print("Always on top")
+        else:
+            print("No on top")
+
     def onClick_copy_reg(self):
         pyperclip.copy(self.txt_registro.toPlainText())
         self.save_registro()
@@ -581,8 +586,7 @@ class Ui_MainWindow(object):
         #         print('archivo ' + self.registro_file + ' creado con exito!')
         # Abre el archivo y guarda el registro
         with open(self.registro_file, 'a') as f:
-            self.contador_llamadas += 1
-            registro = str(self.contador_llamadas) + ': ' + self.txt_registro.toPlainText()
+            registro = datetime.now().strftime('%H:%M:%S') + '   ' + self.txt_registro.toPlainText()
             f.write(registro + '\n')
         # Abre el archivo de registros y lo lee
         with open(self.registro_file, 'r') as f:

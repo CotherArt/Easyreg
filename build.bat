@@ -1,0 +1,1 @@
+pyinstaller --onefile --name="Easyreg" --windowed --icon="icons\easyreg.ico" main.py
